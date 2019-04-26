@@ -24,3 +24,22 @@ export const Peca = styled.div`
 
 
 `;
+export const Movimentos = styled.div`
+    .movm {
+        transform: translate(${props => props.local || '0px, 0px'});
+        position: absolute;
+        background-color: #4e86ec;
+        width: 52px;
+        border-radius: 30px;
+        height: 52px;
+        margin: 10px;
+        font-size: 48px;
+        text-align: center;
+        opacity: 0.7;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+    }
+
+
+`;
