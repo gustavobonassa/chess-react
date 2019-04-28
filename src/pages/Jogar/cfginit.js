@@ -50,5 +50,7 @@ peca[1][6] = new Bispo(2);
 peca[1][7] = new Cavalo(2);
 peca[1][8] = new Torre(2);
 
+
+
 export { peca, posicoes };
 
