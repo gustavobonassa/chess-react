@@ -6,7 +6,8 @@ import Peca from './peca.js';
 
 export default class Rei extends Peca {
     constructor(player){
-        super(player, (player === 1? "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"));
+        var numMov = 0;
+        super(player, (player === 1? "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"), numMov);
     }
     movimentosPossiveis(posicao,peca){
         var i,j,x,y;
@@ -44,7 +45,17 @@ export default class Rei extends Peca {
         if(this.possivel(x-1,y) && peca[x-1][y].player !== this.player){
             mov[x-1][y] = 1
         }
-
+        ////////////////rocky
+        if(this.numMov === 0 && peca[x][y+1].length === 0 && peca[x][y+2].length === 0 && peca[x][y+3].numMov ===0){
+            mov[x][y+2] = 2;
+            mov[x][y+3] = 2;
+        }
+        if(this.numMov === 0 && peca[x][y-1].length === 0 && peca[x][y-2].length === 0 && peca[x][y-3].length === 0 && peca[x][y-4].numMov ===0){
+            mov[x][y-2] = 2;
+            mov[x][y-3] = 2;
+            mov[x][y-4] = 2;
+        }
+        
         return (mov);
     }
     possivel(px, py){

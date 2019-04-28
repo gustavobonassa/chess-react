@@ -25,6 +25,7 @@ export const Peca = styled.div`
     background-repeat: no-repeat;
     background-size: 100%;
     cursor: pointer;
+    z-index: 10;
 
 `;
 export const Movimentos = styled.div`
@@ -42,6 +43,35 @@ export const Movimentos = styled.div`
         background-repeat: no-repeat;
         background-size: 100%;
         cursor: pointer;
+        z-index: 15;
+    }
+    .movm2 {
+        transform: translate(${props => props.local || '0px, 0px'});
+        position: absolute;
+        background-color: #4e3636;
+        width: 52.01px;
+        border-radius: 30px;
+        height: 52.01px;
+        margin: 10px;
+        font-size: 48px;
+        text-align: center;
+        opacity: 0.7;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+        z-index: 15;
+    }
+    .lastMov {
+        transform: translate(${props => props.local || '0px, 0px'});
+        position: absolute;
+        background-color: #9d9ad8;
+        width: 72.01px;
+        height: 72.01px;
+        opacity: 0.7;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+        z-index: 5;
     }
 
 
@@ -66,5 +96,21 @@ export const PecasFora = styled.div`
     width: 300px;
     position: fixed;
     right: 0;
+
+    .pecasMortas{
+        width: 72px;
+        height: 72px;
+        float: left;
+        background-repeat: no-repeat;
+        background-size: 100%;
+    }
+    .black{
+        width: 100%;
+        float: left;
+    }
+    .white{
+        width: 100%;
+        float: left;
+    }
 
 `;
