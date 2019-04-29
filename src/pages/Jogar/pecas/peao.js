@@ -31,7 +31,7 @@ export default class Peao extends Peca {
             if(this.possivel(x-1,y+1) && peca[x-1][y+1].player === 2)
                 mov[x-1][y+1] = 1;
             if(this.possivel(x-2,y) && peca[x-2][y].length === 0 && x === 7 && a === 0) // primeiro movimento
-                mov[x-2][y] = 1;
+                mov[x-2][y] = 3;
         }else{
             if(this.possivel(x+1,y) && peca[x+1][y].length === 0){
                 mov[x+1][y] = 1;
@@ -43,7 +43,7 @@ export default class Peao extends Peca {
             if(this.possivel(x+1,y+1) && peca[x+1][y+1].player === 1)
                 mov[x+1][y+1] = 1;
             if(this.possivel(x+2,y) && peca[x+2][y].length === 0 && x === 2 && a === 0) // primeiro movimento
-                mov[x+2][y] = 1;
+                mov[x+2][y] = 3;
         }
         return (mov);
     }

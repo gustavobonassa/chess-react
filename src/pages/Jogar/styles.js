@@ -83,10 +83,19 @@ export const MostraTurno = styled.div`
     margin-left: 20px;
     position: fixed;
     text-transform: uppercase;
+    text-align: center;
 
     .turnoClass{
         border: 1px solid gray;
+        border-radius: 15px;
         padding: 20px;
+    }
+    .rodar{
+        border: 1px solid gray;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 10px;
+        cursor: pointer;
     }
 
 

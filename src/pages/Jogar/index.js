@@ -16,7 +16,8 @@ export default class Jogar extends Component {
             player: 1,
             sourceSelection: -1,
             status: '',
-            turno: 'branco',   
+            turno: 'branco',
+            playerBranco: 1
         }
         this.displayPossMov = [];
         this.lastMove = [];
@@ -33,7 +34,7 @@ export default class Jogar extends Component {
         for(let i=1; i<=8; i++){
             for(let j=1; j<=8; j++){
                 if(possmov[i][j] !== 0)
-                    this.displayPossMov.push(<div key={i+"="+j} onClick={(f) => this.movePeca(peca[cord[0]][cord[1]],[i,j],cord,possmov[i][j])} className={(possmov[i][j]===1)?"movm": "movm2"} style={{ transform: "translate("+posicoes[i][j].posx+"px, "+posicoes[i][j].posy+"px)"}}></div>);
+                    this.displayPossMov.push(<div key={i+"="+j} onClick={(f) => this.movePeca(peca[cord[0]][cord[1]],[i,j],cord,possmov[i][j])} className={(possmov[i][j]===1 || 3)?"movm": "movm2"} style={{ transform: "translate("+posicoes[i][j].posx+"px, "+posicoes[i][j].posy+"px)"}}></div>);
             }
         }
     }
@@ -54,6 +55,34 @@ export default class Jogar extends Component {
             }
         }
     }
+    rodarTab = () => {
+        var m = [];
+        var w,z;
+        for(w=1;w<=8;w++){
+            m[w] = [];
+            for(z=1;z<=8;z++){
+                m[w][z] = [];
+            }
+        }
+        for(let i=1; i<=8; i++){
+            for(let j=1; j<=8; j++){
+                if(peca[i][j].length !== 0){
+                    var temp = peca[i][j];
+                    temp.player = (temp.player === 1) ? 2 : 1 ;
+                    m[8-i+1][j] = temp;
+                }
+            }
+        }
+        for(w=1;w<=8;w++){
+            for(z=1;z<=8;z++){
+                peca[w][z] = m[w][z];
+            }
+        }
+        var whit = (this.state.playerBranco === 1) ? 2 : 1 ;
+        this.setState({
+            playerBranco: whit
+        });
+    }
     updateTurno = () => {
         if( this.state.turno === 'branco'){
             this.setState({
@@ -66,18 +95,52 @@ export default class Jogar extends Component {
         }
     }
     verificaCheck = () => {
-        for(let i=0;i<32;i++){
-
+        //console.log(peca[8][5]);
+        var jafoi1 = [];
+        var jafoi2 = [];
+        var i,j,x,y,w,z;
+        for(w=1;w<=8;w++){
+            jafoi1[w] = [];
+            jafoi2[w] = [];
+            for(z=1;z<=8;z++){
+                jafoi1[w][z] = 0;
+                jafoi2[w][z] = 0;
+            }
+        }
+        for(x=1; x<=8; x++){
+            for(y=1; y<=8; y++){
+                if(this.state.turno === 'branco' && peca[x][y].player !== this.state.playerBranco && peca[x][y].length !== 0){
+                    var possmov = peca[x][y].movimentosPossiveis([x,y],peca);
+                    for(i=1; i<=8; i++){
+                        for(j=1; j<=8; j++){
+                            if(possmov[i][j] === 1 && jafoi1[i][j]===0){
+                                jafoi1[i][j]++;
+                                if(peca[i][j].__proto__.constructor.name === "Rei"){
+                                    console.log("rei em check");
+                                }
+                            }
+                        }
+                    }
+                }
+                if(this.state.turno === 'preto' && peca[x][y].player === this.state.playerBranco && peca[x][y].length !== 0){
+                    var possmov2 = peca[x][y].movimentosPossiveis([x,y],peca);
+                    for(i=1; i<=8; i++){
+                        for(j=1; j<=8; j++){
+                            if(possmov2[i][j] === 1 && jafoi2[i][j]===0){
+                                jafoi2[i][j]++;
+                                if(peca[i][j].__proto__.constructor.name === "Rei"){
+                                    console.log("rei em check");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     removePossMovimentos = () => {
         if(this.displayPossMov){
             this.displayPossMov = [];
-        }
-    }
-    removePecas = () => {
-        if(this.displayPecas){
-            this.displayPecas = [];
         }
     }
 
@@ -88,9 +151,7 @@ export default class Jogar extends Component {
         });
     }
     insereCaidos = (novacord) => {
-        //peca[novacord[0]][novacord[1]].player;
-        
-        if(peca[novacord[0]][novacord[1]].player === 1)
+        if(peca[novacord[0]][novacord[1]].player === this.state.playerBranco)
             this.state.brancosCaidos.push(<div key={uniqkey} className="pecasMortas" style={ peca[novacord[0]][novacord[1]].style }></div>);
         else
             this.state.pretosCaidos.push(<div key={uniqkey} className="pecasMortas" style={ peca[novacord[0]][novacord[1]].style }></div>);
@@ -98,7 +159,8 @@ export default class Jogar extends Component {
     }
 
     movePeca = (f,novacord,cordatual,type) => {
-        if(type===1){
+        this.verificaCheck();
+        if(type===1 || 3){
             this.setBGColor(this.state.sourceSelection, '');
             this.removePossMovimentos();
             if(peca[novacord[0]][novacord[1]].length !== 0)
@@ -144,7 +206,7 @@ export default class Jogar extends Component {
         cord[0] = parseInt(cord[0]);
         cord[1] = parseInt(cord[1]);
         this.removePossMovimentos();
-        if( this.state.turno === 'branco' && peca[cord[0]][cord[1]].player === 1){
+        if( this.state.turno === 'branco' && peca[cord[0]][cord[1]].player === this.state.playerBranco){
             if(this.state.sourceSelection === -1){
                     p.target.style.backgroundColor = 'rgb(90, 152, 51)';
                     this.setState({sourceSelection: p.target});
@@ -161,7 +223,7 @@ export default class Jogar extends Component {
                 }
             }
         }
-        if( this.state.turno === 'preto' && peca[cord[0]][cord[1]].player === 2){
+        if( this.state.turno === 'preto' && peca[cord[0]][cord[1]].player !== this.state.playerBranco){
             if(this.state.sourceSelection === -1){
                     p.target.style.backgroundColor = 'rgb(90, 152, 51)';
                     this.setState({sourceSelection: p.target});
@@ -187,6 +249,7 @@ export default class Jogar extends Component {
             <Container>
                 <MostraTurno>
                     <div className="turnoClass">VEZ DO {this.state.turno}</div>
+                    <div className="rodar" onClick={(f) => this.rodarTab()}>Girar tabuleiro</div>
                 </MostraTurno>
                 <PecasFora>
                     <div className="black">
