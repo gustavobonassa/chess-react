@@ -4,13 +4,13 @@ import { Container, Tabuleiro, Peca, Movimentos, PecasFora, MostraTurno } from '
 
 import { peca, posicoes } from './cfginit.js';
 //import peao from "../../assets/1.png";
+import Rainha from './pecas/rainha.js';
 
 var uniqkey = 0;
 export default class Jogar extends Component {
     constructor(){
         super();
         this.state = {
-            squares: [],
             brancosCaidos: [],
             pretosCaidos: [],
             player: 1,
@@ -28,6 +28,7 @@ export default class Jogar extends Component {
     async componentDidMount(){
         
         console.log(this.displayPecas);
+        console.log(peca);
     }
     geraPossMovimentos = (cord) => {
         const possmov = peca[cord[0]][cord[1]].movimentosPossiveis([cord[0],cord[1]],peca);
@@ -86,11 +87,13 @@ export default class Jogar extends Component {
     updateTurno = () => {
         if( this.state.turno === 'branco'){
             this.setState({
-                turno: 'preto'
+                turno: 'preto',
+                player: 2
             });
         }else{
             this.setState({
-                turno: 'branco'
+                turno: 'branco',
+                player: 1
             });
         }
     }
@@ -137,6 +140,8 @@ export default class Jogar extends Component {
                 }
             }
         }
+        console.log(jafoi1);
+        console.log(jafoi2);
     }
     removePossMovimentos = () => {
         if(this.displayPossMov){
@@ -160,7 +165,7 @@ export default class Jogar extends Component {
 
     movePeca = (f,novacord,cordatual,type) => {
         this.verificaCheck();
-        if(type===1 || 3){
+        if(type===1 || type=== 3){
             this.setBGColor(this.state.sourceSelection, '');
             this.removePossMovimentos();
             if(peca[novacord[0]][novacord[1]].length !== 0)
@@ -168,6 +173,9 @@ export default class Jogar extends Component {
             peca[novacord[0]][novacord[1]]= f;
             peca[novacord[0]][novacord[1]].numMov++;
             peca[cordatual[0]][cordatual[1]] = [];
+            if(peca[novacord[0]][novacord[1]].__proto__.constructor.name === "Peao" && (novacord[0] === 1 || novacord[0] === 8)){
+                peca[novacord[0]][novacord[1]] = new Rainha(this.state.player);
+            }
             this.updateTurno();
             this.geraLastMov(novacord,cordatual);
         }else{//////////////verifica se o tipo de movimentoo é rocky
