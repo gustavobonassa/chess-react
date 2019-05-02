@@ -73,6 +73,18 @@ export const Movimentos = styled.div`
         cursor: pointer;
         z-index: 5;
     }
+    .kingCheck {
+        transform: translate(${props => props.local || '0px, 0px'});
+        position: absolute;
+        background-color: rgb(193, 61, 61);;
+        width: 72.01px;
+        height: 72.01px;
+        opacity: 0.7;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+        z-index: 5;
+    }
 
 
 `;

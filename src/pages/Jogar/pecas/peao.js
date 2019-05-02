@@ -9,7 +9,7 @@ export default class Peao extends Peca {
         super(player, (player === 1? "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg"));
     }
 
-    movimentosPossiveis(posicao,peca){
+    movimentosPossiveis(posicao,peca,atacks = null){
         var i,j,a=0;
         var mov = [];
         for(i=1;i<=8;i++){
@@ -22,28 +22,28 @@ export default class Peao extends Peca {
         var y = posicao[1];
         if(this.player === 1){
             if(this.possivel(x-1,y) && peca[x-1][y].length === 0){
-                mov[x-1][y] = 1;
+                mov[x-1][y] = 3;
             }else{
                 a++;
             }
-            if(this.possivel(x-1,y-1) && peca[x-1][y-1].player === 2)//verifica se tem uma peca de cor oposta na sua diagonal
+            if((this.possivel(x-1,y-1) && peca[x-1][y-1].player === 2) || atacks === 1)//verifica se tem uma peca de cor oposta na sua diagonal
                 mov[x-1][y-1] = 1;
-            if(this.possivel(x-1,y+1) && peca[x-1][y+1].player === 2)
+            if((this.possivel(x-1,y+1) && peca[x-1][y+1].player === 2) || atacks === 1)
                 mov[x-1][y+1] = 1;
             if(this.possivel(x-2,y) && peca[x-2][y].length === 0 && x === 7 && a === 0) // primeiro movimento
-                mov[x-2][y] = 1;
+                mov[x-2][y] = 3;
         }else{
             if(this.possivel(x+1,y) && peca[x+1][y].length === 0){
-                mov[x+1][y] = 1;
+                mov[x+1][y] = 3;
             }else{
                 a++;
             }
-            if(this.possivel(x+1,y-1) && peca[x+1][y-1].player === 1)
+            if((this.possivel(x+1,y-1) && peca[x+1][y-1].player === 1) || atacks === 1)
                 mov[x+1][y-1] = 1;
-            if(this.possivel(x+1,y+1) && peca[x+1][y+1].player === 1)
+            if((this.possivel(x+1,y+1) && peca[x+1][y+1].player === 1) || atacks === 1)
                 mov[x+1][y+1] = 1;
             if(this.possivel(x+2,y) && peca[x+2][y].length === 0 && x === 2 && a === 0) // primeiro movimento
-                mov[x+2][y] = 1;
+                mov[x+2][y] = 3;
         }
         return (mov);
     }

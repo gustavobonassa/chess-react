@@ -21,14 +21,15 @@ export default class Jogar extends Component {
         }
         this.displayPossMov = [];
         this.lastMove = [];
-        this.displayPecas = []; 
+        this.displayPecas = [];
+        this.checkKing = [];
     }
 
 
     async componentDidMount(){
         
         console.log(this.displayPecas);
-        console.log(peca);
+        //console.log(peca[7][3].movimentosPossiveis([7,1],peca,1));
     }
     geraPossMovimentos = (cord) => {
         const possmov = peca[cord[0]][cord[1]].movimentosPossiveis([cord[0],cord[1]],peca);
@@ -113,26 +114,26 @@ export default class Jogar extends Component {
         for(x=1; x<=8; x++){
             for(y=1; y<=8; y++){
                 if(this.state.turno === 'branco' && peca[x][y].player !== this.state.playerBranco && peca[x][y].length !== 0){
-                    var possmov = peca[x][y].movimentosPossiveis([x,y],peca);
+                    var possmov = peca[x][y].movimentosPossiveis([x,y],peca,1);
                     for(i=1; i<=8; i++){
                         for(j=1; j<=8; j++){
                             if(possmov[i][j] === 1 && jafoi1[i][j]===0){
                                 jafoi1[i][j]++;
                                 if(peca[i][j].__proto__.constructor.name === "Rei"){
-                                    console.log("rei em check");
+                                    return [i,j];
                                 }
                             }
                         }
                     }
                 }
                 if(this.state.turno === 'preto' && peca[x][y].player === this.state.playerBranco && peca[x][y].length !== 0){
-                    var possmov2 = peca[x][y].movimentosPossiveis([x,y],peca);
+                    var possmov2 = peca[x][y].movimentosPossiveis([x,y],peca,1);
                     for(i=1; i<=8; i++){
                         for(j=1; j<=8; j++){
                             if(possmov2[i][j] === 1 && jafoi2[i][j]===0){
                                 jafoi2[i][j]++;
                                 if(peca[i][j].__proto__.constructor.name === "Rei"){
-                                    console.log("rei em check");
+                                    return [i,j];
                                 }
                             }
                         }
@@ -142,6 +143,7 @@ export default class Jogar extends Component {
         }
         console.log(jafoi1);
         console.log(jafoi2);
+        return 0;
     }
     removePossMovimentos = () => {
         if(this.displayPossMov){
@@ -164,48 +166,52 @@ export default class Jogar extends Component {
     }
 
     movePeca = (f,novacord,cordatual,type) => {
-        this.verificaCheck();
-        if(type===1 || type=== 3){
-            this.setBGColor(this.state.sourceSelection, '');
-            this.removePossMovimentos();
-            if(peca[novacord[0]][novacord[1]].length !== 0)
-                this.insereCaidos(novacord);
-            peca[novacord[0]][novacord[1]]= f;
-            peca[novacord[0]][novacord[1]].numMov++;
-            peca[cordatual[0]][cordatual[1]] = [];
-            if(peca[novacord[0]][novacord[1]].__proto__.constructor.name === "Peao" && (novacord[0] === 1 || novacord[0] === 8)){
-                peca[novacord[0]][novacord[1]] = new Rainha(this.state.player);
-            }
-            this.updateTurno();
-            this.geraLastMov(novacord,cordatual);
-        }else{//////////////verifica se o tipo de movimentoo é rocky
-            this.setBGColor(this.state.sourceSelection, '');
-            this.removePossMovimentos();
-            var old = [cordatual[0],cordatual[1]];
-            var newco = [];
-            if(novacord[1]>cordatual[1]){
+        var a = this.verificaCheck(); 
+        this.setBGColor(this.state.sourceSelection, '');
+        this.removePossMovimentos();
+        if(a){
+            this.checkKing = [];
+            console.log("rei em check, mova ele");
+            this.checkKing.push(<div key="dsad" className="kingCheck" style={{ transform: "translate("+posicoes[a[0]][a[1]].posx+"px, "+posicoes[a[0]][a[1]].posy+"px)"}}></div>);
+        }else{
+            if(type===1 || type=== 3){
+                if(peca[novacord[0]][novacord[1]].length !== 0)
+                    this.insereCaidos(novacord);
+                peca[novacord[0]][novacord[1]]= f;
+                peca[novacord[0]][novacord[1]].numMov++;
                 peca[cordatual[0]][cordatual[1]] = [];
-                cordatual[1] = cordatual[1]+2;
-                peca[cordatual[0]][cordatual[1]]= f;
-                peca[cordatual[0]][cordatual[1]].numMov++;
-                peca[cordatual[0]][cordatual[1]+1].numMov++;
+                if(peca[novacord[0]][novacord[1]].__proto__.constructor.name === "Peao" && (novacord[0] === 1 || novacord[0] === 8)){
+                    peca[novacord[0]][novacord[1]] = new Rainha(this.state.player);
+                }
+                this.updateTurno();
+                this.geraLastMov(novacord,cordatual);
+            }else{//////////////verifica se o tipo de movimentoo é rocky
+                var old = [cordatual[0],cordatual[1]];
+                var newco = [];
+                if(novacord[1]>cordatual[1]){
+                    peca[cordatual[0]][cordatual[1]] = [];
+                    cordatual[1] = cordatual[1]+2;
+                    peca[cordatual[0]][cordatual[1]]= f;
+                    peca[cordatual[0]][cordatual[1]].numMov++;
+                    peca[cordatual[0]][cordatual[1]+1].numMov++;
 
-                peca[cordatual[0]][cordatual[1]-1] = peca[novacord[0]][cordatual[1]+1];
-                peca[cordatual[0]][cordatual[1]+1] = [];
-                newco = [old[0],old[1]+3];
-            }else{
-                peca[cordatual[0]][cordatual[1]] = [];
-                cordatual[1] = cordatual[1]-3;
-                peca[cordatual[0]][cordatual[1]]= f;
-                peca[cordatual[0]][cordatual[1]].numMov++;
-                peca[cordatual[0]][cordatual[1]-1].numMov++;
+                    peca[cordatual[0]][cordatual[1]-1] = peca[novacord[0]][cordatual[1]+1];
+                    peca[cordatual[0]][cordatual[1]+1] = [];
+                    newco = [old[0],old[1]+3];
+                }else{
+                    peca[cordatual[0]][cordatual[1]] = [];
+                    cordatual[1] = cordatual[1]-3;
+                    peca[cordatual[0]][cordatual[1]]= f;
+                    peca[cordatual[0]][cordatual[1]].numMov++;
+                    peca[cordatual[0]][cordatual[1]-1].numMov++;
 
-                peca[cordatual[0]][cordatual[1]+1] = peca[cordatual[0]][cordatual[1]-1];
-                peca[cordatual[0]][cordatual[1]-1] = [];
-                newco = [old[0],old[1]-4];
+                    peca[cordatual[0]][cordatual[1]+1] = peca[cordatual[0]][cordatual[1]-1];
+                    peca[cordatual[0]][cordatual[1]-1] = [];
+                    newco = [old[0],old[1]-4];
+                }
+                this.updateTurno();
+                this.geraLastMov(newco,old);
             }
-            this.updateTurno();
-            this.geraLastMov(newco,old);
         }
     }
 
@@ -271,6 +277,7 @@ export default class Jogar extends Component {
                 <Tabuleiro>
                 {this.displayPecas}
                     <Movimentos>
+                        {this.checkKing}
                         {this.displayPossMov}
                         {this.lastMove}
                     </Movimentos>
