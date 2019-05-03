@@ -98,7 +98,8 @@ export default class Jogar extends Component {
             });
         }
     }
-    verificaCheck = () => {
+    verificaCheck = (novacord,f) => {
+        console.log(f);
         //console.log(peca[8][5]);
         var jafoi1 = [];
         var jafoi2 = [];
@@ -120,7 +121,10 @@ export default class Jogar extends Component {
                             if(possmov[i][j] === 1 && jafoi1[i][j]===0){
                                 jafoi1[i][j]++;
                                 if(peca[i][j].__proto__.constructor.name === "Rei"){
-                                    return [i,j];
+                                    if(possmov[novacord[0]][novacord[1]]===0 && f.__proto__.constructor.name === "Rei")
+                                        return 0;
+                                    else
+                                        return [i,j];
                                 }
                             }
                         }
@@ -133,7 +137,11 @@ export default class Jogar extends Component {
                             if(possmov2[i][j] === 1 && jafoi2[i][j]===0){
                                 jafoi2[i][j]++;
                                 if(peca[i][j].__proto__.constructor.name === "Rei"){
-                                    return [i,j];
+                                    if(possmov2[novacord[0]][novacord[1]]===0 && f.__proto__.constructor.name === "Rei"){
+                                        return 0;
+                                    }else{
+                                        return [i,j];
+                                    }
                                 }
                             }
                         }
@@ -166,7 +174,7 @@ export default class Jogar extends Component {
     }
 
     movePeca = (f,novacord,cordatual,type) => {
-        var a = this.verificaCheck(); 
+        var a = this.verificaCheck(novacord,f); 
         this.setBGColor(this.state.sourceSelection, '');
         this.removePossMovimentos();
         if(a){
