@@ -11,7 +11,21 @@ export const Tabuleiro = styled.div`
     margin: auto;
     background: url(${table}) 0% 0% / 100% 100%;
 
-
+    .posCord{
+        width: 72.01px;
+        height: 72.01px;
+        position: absolute;
+    }
+    .posR {
+        float: right;
+        color: #464545;
+    }
+    .posL {
+        float: left;
+        bottom: 0;
+        color: #464545;
+        position: absolute;
+    }
 `;
 
 export const Peca = styled.div`
@@ -132,6 +146,14 @@ export const PecasFora = styled.div`
     .white{
         width: 100%;
         float: left;
+    }
+    .log{
+        float:left;
+        width: 90%;
+        margin:20px;
+        height: 150px;
+        overflow-y: scroll;
+        border:1px solid gray;
     }
 
 `;

@@ -7,6 +7,7 @@ import { peca, posicoes } from './cfginit.js';
 import Rainha from './pecas/rainha.js';
 
 var uniqkey = 0;
+var cont = 0;
 export default class Jogar extends Component {
     constructor(){
         super();
@@ -17,18 +18,22 @@ export default class Jogar extends Component {
             sourceSelection: -1,
             status: '',
             turno: 'branco',
-            playerBranco: 1
+            playerBranco: 1,
+            rotate: 0,
+            log: []
         }
         this.displayPossMov = [];
         this.lastMove = [];
         this.displayPecas = [];
+        this.displayCords = [];
         this.checkKing = [];
     }
 
 
     async componentDidMount(){
-        
+        this.updateCord(0);
         console.log(this.displayPecas);
+        console.log(posicoes);
         //console.log(peca[7][3].movimentosPossiveis([7,1],peca,1));
     }
     geraPossMovimentos = (cord) => {
@@ -57,6 +62,29 @@ export default class Jogar extends Component {
             }
         }
     }
+    updateCord = () => {
+        this.displayCords = [];
+        var bol = this.state.rotate;
+        if(bol===0){
+            for(let i=1; i<=8; i++){
+                this.displayCords.push(<div key={i+"f"} className="posCord" style={{ transform: "translate("+posicoes[i][8].posx+"px, "+posicoes[i][8].posy+"px)"}}><span className="posR">{posicoes[i][8].yis}</span></div>);
+            }
+            for(let i=1; i<=8; i++){
+                this.displayCords.push(<div key={i+"p"} className="posCord" style={{ transform: "translate("+posicoes[8][i].posx+"px, "+posicoes[8][i].posy+"px)"}}><span className="posL">{String.fromCharCode(posicoes[8][i].xis)}</span></div>);
+            }
+        }else{
+            for(let i=8; i>=1; i--){
+                this.displayCords.push(<div key={i+"f"} className="posCord" style={{ transform: "translate("+posicoes[8-i+1][8].posx+"px, "+posicoes[8-i+1][8].posy+"px)"}}><span className="posR">{posicoes[i][8].yis}</span></div>);
+            }
+            for(let i=1; i<=8; i++){
+                this.displayCords.push(<div key={i+"p"} className="posCord" style={{ transform: "translate("+posicoes[8][i].posx+"px, "+posicoes[8][i].posy+"px)"}}><span className="posL">{String.fromCharCode(posicoes[8][i].xis)}</span></div>);
+            }
+        }
+        bol = (bol===0)? 1 : 0;
+        this.setState({
+            rotate: bol
+        });
+    }
     rodarTab = () => {
         var m = [];
         var w,z;
@@ -84,6 +112,7 @@ export default class Jogar extends Component {
         this.setState({
             playerBranco: whit
         });
+        this.updateCord(1);
     }
     updateTurno = () => {
         if( this.state.turno === 'branco'){
@@ -207,6 +236,8 @@ export default class Jogar extends Component {
                 if(peca[novacord[0]][novacord[1]].__proto__.constructor.name === "Peao" && (novacord[0] === 1 || novacord[0] === 8)){
                     peca[novacord[0]][novacord[1]] = new Rainha(this.state.player);
                 }
+                this.state.log.unshift(<div key={cont+"cc"}>{this.state.turno+": "+peca[novacord[0]][novacord[1]].__proto__.constructor.name+" movida em "+String.fromCharCode(posicoes[novacord[0]][novacord[1]].xis)+" "+posicoes[novacord[0]][novacord[1]].yis}</div>);
+                cont++;
                 this.geraLastMov(novacord,cordatual);
             }else{//////////////verifica se o tipo de movimentoo é rocky
                 var old = [cordatual[0],cordatual[1]];
@@ -295,10 +326,14 @@ export default class Jogar extends Component {
                     <div className="white">
                         {this.state.brancosCaidos}
                     </div>
+                    <div className="log">
+                    {this.state.log}
+                    </div>
                 </PecasFora>
 
                 <Tabuleiro>
                 {this.displayPecas}
+                {this.displayCords}
                     <Movimentos>
                         {this.checkKing}
                         {this.displayPossMov}

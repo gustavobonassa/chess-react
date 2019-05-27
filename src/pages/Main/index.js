@@ -8,7 +8,7 @@ export default class Main extends Component {
     render() {
         return (
             <Container>
-                <form >
+                <form action="jogar">
                     <h1>Xadrez</h1>
                     <input 
                         placeholder="Digite seu nome"

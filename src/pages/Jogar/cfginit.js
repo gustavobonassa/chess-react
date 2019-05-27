@@ -11,10 +11,12 @@ const posicoes = [];
 const tamanho = 72;
 var posix = 0;
 var posiy = 0;
+var xis = 64;//A-1 in ascii 
+var yis = 0;
 for(i=1;i<=8;i++){
     posicoes[i] = [];
     for(j=1;j<=8;j++){
-        posicoes[i][j] = {posx:posix, posy:posiy};
+        posicoes[i][j] = {posx:posix, posy:posiy,xis:xis+j,yis:yis+i};
         posix = posix + tamanho;
     }
     posiy = posiy + tamanho;
