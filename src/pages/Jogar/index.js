@@ -36,7 +36,7 @@ export default class Jogar extends Component {
         for(let i=1; i<=8; i++){
             for(let j=1; j<=8; j++){
                 if(possmov[i][j] !== 0)
-                    this.displayPossMov.push(<div key={i+"="+j} onClick={(f) => this.movePeca(peca[cord[0]][cord[1]],[i,j],cord,possmov[i][j])} className={(possmov[i][j]===1 || 3)?"movm": "movm2"} style={{ transform: "translate("+posicoes[i][j].posx+"px, "+posicoes[i][j].posy+"px)"}}></div>);
+                    this.displayPossMov.push(<div key={i+"="+j} onClick={(f) => this.movePeca(peca[cord[0]][cord[1]],[i,j],cord,possmov[i][j])} className={(possmov[i][j]===1 || possmov[i][j]===3)?"movm": "movm2"} style={{ transform: "translate("+posicoes[i][j].posx+"px, "+posicoes[i][j].posy+"px)"}}></div>);
             }
         }
     }
@@ -98,8 +98,7 @@ export default class Jogar extends Component {
             });
         }
     }
-    verificaCheck = (novacord,f) => {
-        console.log(f);
+    verificaCheck = (novacord,f,temp) => {
         //console.log(peca[8][5]);
         var jafoi1 = [];
         var jafoi2 = [];
@@ -114,14 +113,14 @@ export default class Jogar extends Component {
         }
         for(x=1; x<=8; x++){
             for(y=1; y<=8; y++){
-                if(this.state.turno === 'branco' && peca[x][y].player !== this.state.playerBranco && peca[x][y].length !== 0){
-                    var possmov = peca[x][y].movimentosPossiveis([x,y],peca,1);
+                if(this.state.turno === 'branco' && temp[x][y].player !== this.state.playerBranco && temp[x][y].length !== 0){
+                    var possmov = temp[x][y].movimentosPossiveis([x,y],temp,1);
                     for(i=1; i<=8; i++){
                         for(j=1; j<=8; j++){
                             if(possmov[i][j] === 1 && jafoi1[i][j]===0){
                                 jafoi1[i][j]++;
-                                if(peca[i][j].__proto__.constructor.name === "Rei"){
-                                    if(possmov[novacord[0]][novacord[1]]===0 && f.__proto__.constructor.name === "Rei")
+                                if(temp[i][j].__proto__.constructor.name === "Rei"){
+                                    if((possmov[novacord[0]][novacord[1]]===0 && f.__proto__.constructor.name === "Rei"))
                                         return 0;
                                     else
                                         return [i,j];
@@ -130,13 +129,13 @@ export default class Jogar extends Component {
                         }
                     }
                 }
-                if(this.state.turno === 'preto' && peca[x][y].player === this.state.playerBranco && peca[x][y].length !== 0){
-                    var possmov2 = peca[x][y].movimentosPossiveis([x,y],peca,1);
+                if(this.state.turno === 'preto' && temp[x][y].player === this.state.playerBranco && temp[x][y].length !== 0){
+                    var possmov2 = temp[x][y].movimentosPossiveis([x,y],temp,1);
                     for(i=1; i<=8; i++){
                         for(j=1; j<=8; j++){
                             if(possmov2[i][j] === 1 && jafoi2[i][j]===0){
                                 jafoi2[i][j]++;
-                                if(peca[i][j].__proto__.constructor.name === "Rei"){
+                                if(temp[i][j].__proto__.constructor.name === "Rei"){
                                     if(possmov2[novacord[0]][novacord[1]]===0 && f.__proto__.constructor.name === "Rei"){
                                         return 0;
                                     }else{
@@ -158,6 +157,11 @@ export default class Jogar extends Component {
             this.displayPossMov = [];
         }
     }
+    removeKingCheck = () => {
+        if(this.checkKing){
+            this.checkKing = [];
+        }
+    }
 
     setBGColor = (pecac, cor) => {
         pecac.style.backgroundColor = cor;
@@ -174,9 +178,21 @@ export default class Jogar extends Component {
     }
 
     movePeca = (f,novacord,cordatual,type) => {
-        var a = this.verificaCheck(novacord,f); 
+        var aux = [];
+        if(peca[novacord[0]][novacord[1]].length !== 0)
+            aux = peca[novacord[0]][novacord[1]];
+
+        peca[novacord[0]][novacord[1]]= f;
+        peca[novacord[0]][novacord[1]].numMov++;
+        peca[cordatual[0]][cordatual[1]] = [];
+        var a = this.verificaCheck(novacord,f,peca);
+        peca[cordatual[0]][cordatual[1]]= f;
+        peca[cordatual[0]][cordatual[1]].numMov--;
+        peca[novacord[0]][novacord[1]] = aux;
+
         this.setBGColor(this.state.sourceSelection, '');
         this.removePossMovimentos();
+        this.removeKingCheck();
         if(a){
             this.checkKing = [];
             console.log("rei em check, mova ele");
@@ -191,7 +207,6 @@ export default class Jogar extends Component {
                 if(peca[novacord[0]][novacord[1]].__proto__.constructor.name === "Peao" && (novacord[0] === 1 || novacord[0] === 8)){
                     peca[novacord[0]][novacord[1]] = new Rainha(this.state.player);
                 }
-                this.updateTurno();
                 this.geraLastMov(novacord,cordatual);
             }else{//////////////verifica se o tipo de movimentoo é rocky
                 var old = [cordatual[0],cordatual[1]];
@@ -217,9 +232,9 @@ export default class Jogar extends Component {
                     peca[cordatual[0]][cordatual[1]-1] = [];
                     newco = [old[0],old[1]-4];
                 }
-                this.updateTurno();
                 this.geraLastMov(newco,old);
             }
+            this.updateTurno();
         }
     }
 
